@@ -9,7 +9,9 @@
 </head>
 <body>
     <div class="container">
+	  
         <h1 class="my-4">Pending Deliveries</h1>
+	<a target="_blank" href="https://maps.google.com" id="mapa">cargando...</a>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -30,8 +32,11 @@
         function loadPendingDeliveries() {
             $.get('/pendingdeliveries', function(data) {
                 const tableBody = $('#deliveries-table-body');
+		const mapaElement = $('#mapa');
+		mapaElement.attr('href', data.google_map);
+		mapaElement.html('Abrir mapa');
                 tableBody.empty();
-                data.forEach(function(delivery) {
+                data.deliveries.forEach(function(delivery) {
                     const row = `
                         <tr>
                             <td>${delivery.order_id}</td>

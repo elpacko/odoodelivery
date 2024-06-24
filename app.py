@@ -31,9 +31,7 @@ def index():
 def get_pending_deliveries():
     # Filter deliveries to get only the pending ones
     pending_deliveries={}
-    
     models,uid  = get_odoo_models_uid()
-
     # print(models.execute_kw(db, uid, password, 'res.partner', 'search', [[['is_company', '=', True]]]))
     ordenes_pendientes_ids = models.execute_kw(db, uid, password, 'stock.picking', 'search', [[['state', '=', 'assigned']]])
     ordenes_pendientes = models.execute_kw(db, uid, password, 'stock.picking', 'read', [ordenes_pendientes_ids])
@@ -74,8 +72,8 @@ def get_pending_deliveries():
             "long": long,
         })
     pending_deliveries["deliveries"] = deliveries
+    home_latlong = 'Current+Location'
     pending_deliveries["google_map"] = f"https://www.google.com/maps/dir/{home_latlong}/{'/'.join(lat_longs)}/{home_latlong}/"
-
 
     return jsonify(pending_deliveries)
 
@@ -90,6 +88,6 @@ def mark_delivery_completed():
     
 
 if __name__ == '__main__':
-    app.run(port=6069)
+    app.run(port=6069, host="0.0.0.0")
 
 
