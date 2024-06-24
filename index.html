@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odoo Deliveries</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Pending Deliveries</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ticket</th>
+                    <th>Orden</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
+                    <th>Direccion</th>
+                </tr>
+            </thead>
+            <tbody id="deliveries-table-body">
+                <!-- Pending deliveries will be populated here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function loadPendingDeliveries() {
+            $.get('/pendingdeliveries', function(data) {
+                const tableBody = $('#deliveries-table-body');
+                tableBody.empty();
+                data.forEach(function(delivery) {
+                    const row = `
+                        <tr>
+                            <td>${delivery.order_id}</td>
+                            <td>${delivery.ticket_number}</td>
+                            <td>${delivery.referencia_orden}</td>
+                            <td>${delivery.nombre_cliente}</td>
+                            <td>${delivery.telefono}</td>
+                            <td>${delivery.direccion}</td>
+                            <td><button class="btn btn-success" onclick="markAsCompleted(${delivery.order_id})">Completar</button></td>
+                        </tr>
+                    `;
+                    tableBody.append(row);
+                });
+            });
+        }
+
+        function markAsCompleted(id) {
+            $.ajax({
+                url: '/deliverycompleted',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ id: id }),
+                success: function(response) {
+                    alert(response.message);
+                    loadPendingDeliveries();
+                },
+                error: function(response) {
+                    alert(response.responseJSON.message);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            loadPendingDeliveries();
+        });
+    </script>
+</body>
+</html>
+
